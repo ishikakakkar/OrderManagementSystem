@@ -14,7 +14,7 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int userId;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime orderDate;
     private int totalPrice;
     @OneToMany(targetEntity=OrderItem.class,cascade = CascadeType.ALL,

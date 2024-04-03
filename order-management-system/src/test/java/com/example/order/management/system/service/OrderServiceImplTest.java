@@ -1,5 +1,6 @@
 package com.example.order.management.system.service;
 
+import com.example.order.management.system.exception.OrderDetailsInvalidException;
 import com.example.order.management.system.exception.OrderItemNotFoundException;
 import com.example.order.management.system.exception.OrderNotFoundException;
 import com.example.order.management.system.modal.OrderItem;
@@ -187,6 +188,33 @@ class OrderServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(OrderItemNotFoundException.class, ()-> orderService.placeOrder(orders));
+    }
+
+    @Test
+    void testPlaceOrder_InvalidOrder() {
+        OrderItem orderItem1 = new OrderItem(
+                100,
+                2
+        );
+        ArrayList<OrderItem> orderItemList = new ArrayList<>();
+        orderItemList.add(orderItem1);
+
+        Orders orders = new Orders(-10);
+        orders.setOrderItems(orderItemList);
+        orders.setId(10);
+
+        assertThrows(OrderDetailsInvalidException.class, ()->orderService.placeOrder(orders));
+    }
+
+    @Test
+    void testPlaceOrder_EmptyOrderList() {
+        Orders orders = new Orders(10);
+        orders.setId(10);
+
+        Mockito.when(orderRepository.findById(10))
+                .thenReturn(Optional.empty());
+
+        assertThrows(OrderItemNotFoundException.class, ()->orderService.placeOrder(orders));
     }
 
     @Test

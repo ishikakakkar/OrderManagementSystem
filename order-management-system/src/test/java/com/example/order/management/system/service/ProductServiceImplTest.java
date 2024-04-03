@@ -2,6 +2,7 @@ package com.example.order.management.system.service;
 
 import com.example.order.management.system.exception.ProductAlreadyExistsException;
 import com.example.order.management.system.exception.ProductNotFoundException;
+import com.example.order.management.system.modal.OrderItem;
 import com.example.order.management.system.modal.Product;
 import com.example.order.management.system.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProductServiceImplTest {
 
     @InjectMocks
-    private ProductServiceImpl productServiceImpl;
+    private ProductServiceImpl productService;
 
     @Mock
     private ProductRepository productRepository;
@@ -50,7 +51,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.findAll())
                 .thenReturn(productList);
 
-        ArrayList<Product> returnList = productServiceImpl.getProductList();
+        ArrayList<Product> returnList = productService.getProductList();
 
         assertEquals(returnList, productList);
 
@@ -68,7 +69,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.findById(10))
                 .thenReturn(Optional.of(product));
 
-        Product returnProduct = productServiceImpl.getProductById(10);
+        Product returnProduct = productService.getProductById(10);
 
         assertEquals(returnProduct, product);
     }
@@ -78,9 +79,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.findById(10))
                 .thenReturn(Optional.empty());
 
-        Product returnProduct = productServiceImpl.getProductById(10);
-
-        assertNull(returnProduct);
+        assertThrows(ProductNotFoundException.class, ()-> productService.getProductById(10));
     }
 
     @Test
@@ -98,7 +97,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.save(product))
                 .thenReturn(product);
 
-        String msg = productServiceImpl.addProduct(product);
+        String msg = productService.addProduct(product);
 
         assertEquals(msg, "Product Info added successfully");
     }
@@ -118,7 +117,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.save(product))
                 .thenReturn(product);
 
-        assertThrows(ProductAlreadyExistsException.class, () -> productServiceImpl.addProduct(product));
+        assertThrows(ProductAlreadyExistsException.class, () -> productService.addProduct(product));
 
     }
 
@@ -144,7 +143,7 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.save(updateProduct))
                 .thenReturn(updateProduct);
 
-        Product newProduct = productServiceImpl.updateProduct(1, updateProduct);
+        Product newProduct = productService.updateProduct(1, updateProduct);
 
         assertEquals(newProduct, updateProduct);
     }
@@ -161,6 +160,38 @@ class ProductServiceImplTest {
         Mockito.when(productRepository.findById(1))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, () -> productServiceImpl.updateProduct(1, updateProduct));
+        assertThrows(ProductNotFoundException.class, () -> productService.updateProduct(1, updateProduct));
     }
+
+//    @Test
+//    void testUpdateProductQuantityForPlacingOrder()
+//    {
+//        OrderItem orderItem1 = new OrderItem(
+//                100,
+//                2
+//        );
+//        OrderItem orderItem2 = new OrderItem(
+//                201,
+//                5
+//        );
+//        ArrayList<OrderItem> orderItemList = new ArrayList<>();
+//        orderItemList.add(orderItem1);
+//        orderItemList.add(orderItem2);
+//
+//        Product product = new Product(
+//                "Titan Watch",
+//                "Wrist Watch",
+//                20,
+//                2000
+//        );
+//
+//        Mockito.when(productRepository.findById(Mockito.any(Integer.class)))
+//                .thenReturn(Optional.of(product));
+//
+//        Mockito.doNothing()
+//                .when(productService)
+//                .updateProduct(Mockito.any(Integer.class), product);
+//
+//
+//    }
 }

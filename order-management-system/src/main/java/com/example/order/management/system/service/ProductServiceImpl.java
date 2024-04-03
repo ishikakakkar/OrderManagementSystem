@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
     public void updateProductQuantityForPlacingOrder(List<OrderItem> orderItems) {
         for(OrderItem item: orderItems)
         {
-            Optional<Product> product = Optional.ofNullable(this.getProductById(item.getProductId()));
+            Optional<Product> product = productRepository.findById(item.getProductId());
             if(product.isPresent())
             {
                 Product newProduct = product.get();

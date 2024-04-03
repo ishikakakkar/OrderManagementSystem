@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -83,7 +84,8 @@ class OrdersControllerTest {
 
         Orders mockOrder = new Orders(10);
         mockOrder.setOrderItems(orderItemList);
-
+        mockOrder.setId(1);
+        mockOrder.setOrderDate(LocalDateTime.now());
 
         String inputJson = this.mapToJson(mockOrder);
 //        System.out.println(inputJson);
