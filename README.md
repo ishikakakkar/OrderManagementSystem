@@ -47,11 +47,17 @@ Implemented the following functionalities in the system:
 
 
 ## High Level Design
+![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/HLD%20Order%20Management%20System%20(1).png)
 
 ## Entity Relationship Diagram
+![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/Entity%20Relationship%20Diagram.png)
 
-## Sequence Diagram
+## Sequence Diagram  
+![To add a new product](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/Add%20Product%20Sequence%20Diagram.png)
 
+##
+
+![To place an order](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/Place%20Order%20Sequence%20Diagram.png)
 ## Scalability
 
 1. Add cache layer in front of DB to decrease latency. 
