@@ -35,12 +35,7 @@ public class OrdersController {
     }
 
     @DeleteMapping("orders/{id}")
-    public String delete(@PathVariable("id") int id){
-        Optional<Orders> existingOrder = Optional.ofNullable(this.orderService.getOrderById(id));
-        if(existingOrder.isPresent()){
-            this.orderService.delete(existingOrder.get());
-            return "Order deleted successfully";
-        }
-        return "Order not found";
+    public String deleteOrder(@PathVariable("id") int id){
+        return orderService.deleteOrder(id);
     }
 }

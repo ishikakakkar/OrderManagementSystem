@@ -1,6 +1,7 @@
 package com.example.order.management.system.service;
 
 import com.example.order.management.system.exception.ProductAlreadyExistsException;
+import com.example.order.management.system.exception.ProductDetailsInvalidException;
 import com.example.order.management.system.exception.ProductNotFoundException;
 import com.example.order.management.system.exception.ProductQuantityNotEnoughException;
 import com.example.order.management.system.modal.OrderItem;
@@ -32,12 +33,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public String addProduct(Product product) {
         Product existingProduct
                 = productRepository.getProductByName(product.getName());
         if (existingProduct == null) {
-            productRepository.save(product);
-            return "Product Info added successfully";
+            if(product.isValid())
+            {
+                productRepository.save(product);
+                return "Product Info added successfully";
+            }
+            else
+                throw new ProductDetailsInvalidException("Product details are invalid");
         }
         else
             throw new ProductAlreadyExistsException(
@@ -46,11 +53,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public Product updateProduct(int id, Product product) throws ProductNotFoundException {
+        product.setId(id);
         Optional<Product> existingProduct = productRepository.findById(id);
 
         if (existingProduct.isPresent()) {
-            return productRepository.save(product);
+            if(product.isValid()) {
+                if(!product.equals(existingProduct.get())) {
+                    return productRepository.save(product);
+                }
+                else
+                    throw new ProductDetailsInvalidException("Product details provided are same as present in the DB");
+            }
+            else
+                throw new ProductDetailsInvalidException("Product details invalid");
         }
         else
         {
@@ -60,8 +77,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void checkAndUpdateProductForOrderItem(List<OrderItem> orderItems) {
-        //Check if quantity is available for all products
+    public void updateProductQuantityForPlacingOrder(List<OrderItem> orderItems) {
         for(OrderItem item: orderItems)
         {
             Optional<Product> product = Optional.ofNullable(this.getProductById(item.getProductId()));
@@ -71,19 +87,6 @@ public class ProductServiceImpl implements ProductService {
                 item.setUnitPrice(product.get().getPrice());
                 if(newProduct.getQuantity()<item.getQuantity())
                     throw new ProductQuantityNotEnoughException("Product Quantity not enough for product id:" + item.getProductId());
-            }
-            else
-            {
-                throw new ProductNotFoundException("Product ordered is not found");
-            }
-        }
-        //Update product quantities
-        for(OrderItem item: orderItems)
-        {
-            Optional<Product> product = Optional.ofNullable(this.getProductById(item.getProductId()));
-            if(product.isPresent())
-            {
-                Product newProduct = product.get();
                 newProduct.setQuantity(newProduct.getQuantity()-item.getQuantity());
                 this.updateProduct(item.getProductId(), product.get());
             }
@@ -94,4 +97,26 @@ public class ProductServiceImpl implements ProductService {
         }
 
     }
+
+    @Override
+    @Transactional
+    public void updateProductQuantityForOrderDeletion(List<OrderItem> orderItems) {
+        //Update product quantities
+        for(OrderItem item: orderItems)
+        {
+            Optional<Product> product = Optional.ofNullable(this.getProductById(item.getProductId()));
+            if(product.isPresent())
+            {
+                Product newProduct = product.get();
+                newProduct.setQuantity(newProduct.getQuantity()+item.getQuantity());
+                this.updateProduct(item.getProductId(), product.get());
+            }
+//            else
+//            {
+//                throw new ProductNotFoundException("Product is not found");
+//            }
+        }
+    }
+
+
 }

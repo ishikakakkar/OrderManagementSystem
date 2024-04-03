@@ -13,16 +13,11 @@ import java.util.ArrayList;
 @RestController
 public class ProductController {
 
-//    ProductInfoServiceImpl productInfoServiceImpl;
     @Autowired
     ProductService productService;
 
     @PostMapping("/products")
-    public String addProduct(@RequestBody Product product)
-    {
-        //Onboard a product
-//        ProductInfo productInfo = new ProductInfo("Iphone", "Phone", 100, 90000);
-
+    public String addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 
@@ -40,10 +35,6 @@ public class ProductController {
 
     @PutMapping("/products/{id}")
     public Product updateProduct(@PathVariable("id") int id, @RequestBody Product product) {
-        product.setId(id);
         return productService.updateProduct(id, product);
     }
-
-
-
 }

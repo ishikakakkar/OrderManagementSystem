@@ -9,6 +9,6 @@ public interface OrderService {
     Orders getOrderById(int id);
     String placeOrder(Orders orders);
 
-    void delete(Orders orders);
+    String deleteOrder(int id);
 //    Order updateOrder(Order order);
 }

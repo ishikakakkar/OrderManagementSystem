@@ -86,4 +86,10 @@ public class OrderItem {
     {
         this.totalPrice = this.unitPrice * this.quantity;
     }
+
+    public boolean isValid()
+    {
+        //Check name
+        return quantity > 0 && productId>0;
+    }
 }

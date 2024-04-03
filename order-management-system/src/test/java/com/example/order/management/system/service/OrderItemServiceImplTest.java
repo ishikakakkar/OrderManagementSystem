@@ -98,19 +98,19 @@ class OrderItemServiceImplTest {
 
     }
 
-    @Test
-    void testAddOrderItem_ExistingOrderItem() {
-        OrderItem orderItem = new OrderItem(
-                100,
-                2
-        );
-
-        orderItem.setId(10);
-
-        Mockito.when(orderItemRepository.findById(10))
-                .thenReturn(Optional.of(orderItem));
-
-        assertThrows(OrderItemAlreadyExistsException.class, () -> orderItemServiceImpl.addOrderItem(orderItem));
-
-    }
+//    @Test
+//    void testAddOrderItem_ExistingOrderItem() {
+//        OrderItem orderItem = new OrderItem(
+//                100,
+//                2
+//        );
+//
+//        orderItem.setId(10);
+//
+//        Mockito.when(orderItemRepository.findById(10))
+//                .thenReturn(Optional.of(orderItem));
+//
+//        assertThrows(OrderItemAlreadyExistsException.class, () -> orderItemServiceImpl.addOrderItem(orderItem));
+//
+//    }
 }

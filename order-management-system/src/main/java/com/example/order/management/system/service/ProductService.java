@@ -12,5 +12,6 @@ public interface ProductService {
     Product getProductById(int id);
     String addProduct(Product product);
     Product updateProduct(int id, Product product) throws ProductNotFoundException;
-    void checkAndUpdateProductForOrderItem(List<OrderItem> orderItems);
+    void updateProductQuantityForPlacingOrder(List<OrderItem> orderItems);
+    void updateProductQuantityForOrderDeletion(List<OrderItem> orderItems);
 }

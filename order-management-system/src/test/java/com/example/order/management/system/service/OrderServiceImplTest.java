@@ -1,5 +1,6 @@
 package com.example.order.management.system.service;
 
+import com.example.order.management.system.exception.OrderItemNotFoundException;
 import com.example.order.management.system.exception.OrderNotFoundException;
 import com.example.order.management.system.modal.OrderItem;
 import com.example.order.management.system.modal.Orders;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrderServiceImplTest {
 
     @InjectMocks
-    private OrderServiceImpl orderServiceImpl;
+    private OrderServiceImpl orderService;
 
     @Mock
     private OrderRepository orderRepository;
@@ -78,7 +79,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.findAll())
                 .thenReturn(ordersList);
 
-        ArrayList<Orders> returnList = orderServiceImpl.getOrderList();
+        ArrayList<Orders> returnList = orderService.getOrderList();
 
         assertEquals(returnList, ordersList);
     }
@@ -103,7 +104,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.findById(10))
                 .thenReturn(Optional.of(orders1));
 
-        Orders returnOrders = orderServiceImpl.getOrderById(10);
+        Orders returnOrders = orderService.getOrderById(10);
 
         assertEquals(returnOrders, orders1);
     }
@@ -115,7 +116,7 @@ class OrderServiceImplTest {
 
 //        Orders returnOrders = orderServiceImpl.getOrderById(10);
 
-        assertThrows(OrderNotFoundException.class, ()->orderServiceImpl.getOrderById(10));
+        assertThrows(OrderNotFoundException.class, ()-> orderService.getOrderById(10));
     }
 
     @Test
@@ -152,7 +153,7 @@ class OrderServiceImplTest {
         Mockito.when(orderRepository.findById(10))
                 .thenReturn(Optional.empty());
 
-        Mockito.doNothing().when(productService).checkAndUpdateProductForOrderItem(orderItemList);
+        Mockito.doNothing().when(productService).updateProductQuantityForPlacingOrder(orderItemList);
 
         Mockito.when(orderRepository.save(orders))
                 .thenReturn(orders);
@@ -172,8 +173,63 @@ class OrderServiceImplTest {
         Mockito.when(productService.updateProduct(201, product2))
                 .thenReturn(product2);
 
-        String msg = orderServiceImpl.placeOrder(orders);
+        String msg = orderService.placeOrder(orders);
 
         assertEquals(msg, "Order Placed successfully");
+    }
+
+    @Test
+    void testPlaceOrder_EmptyList()
+    {
+        Orders orders = new Orders(10);
+
+        Mockito.when(orderRepository.findById(10))
+                .thenReturn(Optional.empty());
+
+        assertThrows(OrderItemNotFoundException.class, ()-> orderService.placeOrder(orders));
+    }
+
+    @Test
+    void testDeleteOrder()
+    {
+        OrderItem orderItem1 = new OrderItem(
+                100,
+                2
+        );
+        OrderItem orderItem2 = new OrderItem(
+                201,
+                5
+        );
+        ArrayList<OrderItem> orderItemList = new ArrayList<>();
+        orderItemList.add(orderItem1);
+        orderItemList.add(orderItem2);
+
+        Orders orders = new Orders(10);
+        orders.setOrderItems(orderItemList);
+        orders.setId(10);
+        Mockito.when(orderRepository.findById(10))
+                .thenReturn(Optional.of(orders));
+
+        Mockito.doNothing().when(productService).updateProductQuantityForOrderDeletion(orderItemList);
+
+        Mockito.doNothing().when(orderItemService).deleteOrderItems(orderItemList);
+
+        Mockito.doNothing().when(orderRepository).delete(orders);
+
+        String msg = orderService.deleteOrder(10);
+
+        assertEquals("Order deleted successfully", msg);
+
+    }
+
+    @Test
+    void testDeleteOrder_NonExisting()
+    {
+        Orders orders = new Orders(10);
+
+        Mockito.when(orderRepository.findById(10))
+                .thenReturn(Optional.empty());
+
+        assertThrows(OrderNotFoundException.class, ()-> orderService.deleteOrder(10));
     }
 }

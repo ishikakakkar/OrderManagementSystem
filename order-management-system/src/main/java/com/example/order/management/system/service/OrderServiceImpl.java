@@ -1,20 +1,13 @@
 package com.example.order.management.system.service;
 
-import com.example.order.management.system.exception.OrderAlreadyExistsException;
-import com.example.order.management.system.exception.OrderNotFoundException;
-import com.example.order.management.system.exception.ProductNotAvailableException;
-import com.example.order.management.system.exception.ProductNotFoundException;
+import com.example.order.management.system.exception.*;
 import com.example.order.management.system.modal.OrderItem;
 import com.example.order.management.system.modal.Orders;
-import com.example.order.management.system.modal.Product;
-import com.example.order.management.system.repository.OrderItemRepository;
 import com.example.order.management.system.repository.OrderRepository;
-import com.example.order.management.system.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -48,27 +41,47 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public String placeOrder(Orders orders) {
         orders.setOrderDate(LocalDateTime.now());
-        Optional<Orders> existingOrder
-                = orderRepository.findById(orders.getId());
-        if (existingOrder.isEmpty()) {
-            productService.checkAndUpdateProductForOrderItem(orders.getOrderItems());
+        if(orders.isValid())
+        {
+            Optional<Orders> existingOrder
+                    = orderRepository.findById(orders.getId());
+            if (existingOrder.isEmpty()) {
+                if(!orders.getOrderItems().isEmpty())
+                {
+                    productService.updateProductQuantityForPlacingOrder(orders.getOrderItems());
 
-            orders.calculateTotalPrice();
-            orderRepository.save(orders);
-            for(OrderItem item: orders.getOrderItems())
-            {
+                    orders.calculateTotalPrice();
+                    orderRepository.save(orders);
+                    for(OrderItem item: orders.getOrderItems())
+                    {
 
-                orderItemService.addOrderItem(item);
+                        orderItemService.addOrderItem(item);
+                    }
+                    return "Order Placed successfully";
+                }
+                else
+                    throw new OrderItemNotFoundException("Order Item list is empty");
             }
-            return "Order Placed successfully";
+            else
+                throw new OrderAlreadyExistsException(
+                        "Order already exists!!");
         }
         else
-            throw new OrderAlreadyExistsException(
-                    "Order already exists!!");
+            throw new OrderDetailsInvalidException("Order details are invalid");
+
     }
 
     @Override
-    public void delete(Orders orders){
-        this.orderRepository.delete(orders);
+    @Transactional
+    public String deleteOrder(int id){
+        Optional<Orders> existingOrder = Optional.ofNullable(this.getOrderById(id));
+        if(existingOrder.isPresent()){
+            productService.updateProductQuantityForOrderDeletion(existingOrder.get().getOrderItems());
+            orderItemService.deleteOrderItems(existingOrder.get().getOrderItems());
+            orderRepository.delete(existingOrder.get());
+            return "Order deleted successfully";
+        }
+        throw new OrderNotFoundException("Order not found");
+
     }
 }

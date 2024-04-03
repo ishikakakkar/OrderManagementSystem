@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Orders {
         this.userId = userId;
         this.orderDate = LocalDateTime.now();
         this.totalPrice = 0;
+        orderItems = new ArrayList<>();
 
     }
 
@@ -71,5 +73,16 @@ public class Orders {
             item.calculateTotalPrice();
             this.totalPrice += item.getTotalPrice();
         }
+    }
+    public boolean isValid()
+    {
+        if(userId<=0)
+            return false;
+        for(OrderItem item:orderItems)
+        {
+            if(!item.isValid())
+                return false;
+        }
+        return true;
     }
 }
