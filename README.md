@@ -47,7 +47,10 @@ Implemented the following functionalities in the system:
 
 
 ## High Level Design
-![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/HLD%20Order%20Management%20System%20(1).png)
+![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/HLD%20Order%20Management%20System.jpeg)
+
+## Spring Boot Flow Diagram
+![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/SpringBoot%20Diagram.jpeg)
 
 ## Entity Relationship Diagram
 ![alt text](https://github.com/ishikakakkar/OrderManagementSystem/blob/main/order-management-system/images/Entity%20Relationship%20Diagram.png)
