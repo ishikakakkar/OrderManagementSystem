@@ -6,6 +6,7 @@ import com.example.order.management.system.exception.ProductQuantityNotEnoughExc
 import com.example.order.management.system.modal.OrderItem;
 import com.example.order.management.system.modal.Product;
 import com.example.order.management.system.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void checkAndUpdateProductForOrderItem(List<OrderItem> orderItems) {
         //Check if quantity is available for all products
         for(OrderItem item: orderItems)

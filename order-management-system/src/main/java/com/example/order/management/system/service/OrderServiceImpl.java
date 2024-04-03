@@ -10,6 +10,7 @@ import com.example.order.management.system.modal.Product;
 import com.example.order.management.system.repository.OrderItemRepository;
 import com.example.order.management.system.repository.OrderRepository;
 import com.example.order.management.system.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,48 +44,15 @@ public class OrderServiceImpl implements OrderService{
             throw new OrderNotFoundException("Order not found");
     }
 
-//    public Boolean checkIfAllItemsAreAvailable(Orders orders)
-//    {
-//        for(OrderItem item: orders.getOrderItems())
-//        {
-//            Optional<Product> product = Optional.ofNullable(productService.getProductById(item.getProductId()));
-//            if(product.isPresent())
-//            {
-//                Product newProduct = product.get();
-//                if(newProduct.getQuantity()<item.getQuantity())
-//                    return false;
-//            }
-//            else
-//            {
-//                throw new ProductNotFoundException("Product ordered is not found");
-//            }
-//        }
-//        return true;
-//    }
-//    public void updateProductCountForOrder(Orders orders)
-//    {
-//        for(OrderItem item: orders.getOrderItems())
-//        {
-//            Optional<Product> product = Optional.ofNullable(productService.getProductById(item.getProductId()));
-//            if(product.isPresent())
-//            {
-//                Product newProduct = product.get();
-//                newProduct.setQuantity(newProduct.getQuantity()-item.getQuantity());
-//                productService.updateProduct(item.getProductId(), product.get());
-//            }
-//            else
-//            {
-//                throw new ProductNotFoundException("Product ordered is not found");
-//            }
-//        }
-//    }
     @Override
+    @Transactional
     public String placeOrder(Orders orders) {
         orders.setOrderDate(LocalDateTime.now());
         Optional<Orders> existingOrder
                 = orderRepository.findById(orders.getId());
         if (existingOrder.isEmpty()) {
             productService.checkAndUpdateProductForOrderItem(orders.getOrderItems());
+
             orders.calculateTotalPrice();
             orderRepository.save(orders);
             for(OrderItem item: orders.getOrderItems())

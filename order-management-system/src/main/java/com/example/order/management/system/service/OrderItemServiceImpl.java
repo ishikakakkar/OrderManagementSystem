@@ -5,6 +5,7 @@ import com.example.order.management.system.exception.OrderItemAlreadyExistsExcep
 import com.example.order.management.system.modal.OrderItem;
 import com.example.order.management.system.modal.Orders;
 import com.example.order.management.system.repository.OrderItemRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class OrderItemServiceImpl implements OrderItemService{
     }
 
     @Override
+    @Transactional
     public String addOrderItem(OrderItem orderItem) {
 //        orderItem.setOrderDate(LocalDateTime.now());
 
