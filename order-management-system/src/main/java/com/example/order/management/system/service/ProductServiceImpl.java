@@ -29,7 +29,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(int id) {
         Optional<Product> product = productRepository.findById(id);
-        return product.orElse(null);
+        if(product.isPresent())
+            return product.get();
+        else
+            throw new ProductNotFoundException("Product Not found");
     }
 
     @Override
@@ -64,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
                     return productRepository.save(product);
                 }
                 else
-                    throw new ProductDetailsInvalidException("Product details provided are same as present in the DB");
+                    throw new ProductDetailsInvalidException("Product details provided are same as already present");
             }
             else
                 throw new ProductDetailsInvalidException("Product details invalid");
